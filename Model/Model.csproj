@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Surreily.WadArchaeologist.Model</RootNamespace>
+    <AssemblyName>Surreily.WadArchaeologist.Model</AssemblyName>
+  </PropertyGroup>
+
+</Project>
