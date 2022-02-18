@@ -1,11 +1,11 @@
-﻿namespace Surreily.WadArchaeologist.Functionality.Context {
-    public class WadRegion {
+﻿namespace Surreily.WadArchaeologist.Functionality {
+    public class DataRegion {
         public int StartOffset { get; set; }
         public int EndOffset { get; set; }
 
         public int Length => EndOffset - StartOffset;
 
-        public bool Intersects(WadRegion region) {
+        public bool Intersects(DataRegion region) {
             return Intersects(region.StartOffset, region.EndOffset);
         }
 

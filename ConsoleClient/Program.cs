@@ -1,32 +1,31 @@
 ﻿using System;
 using System.IO;
+using Surreily.WadArchaeologist.Functionality;
 using Surreily.WadArchaeologist.Functionality.Context;
 using Surreily.WadArchaeologist.Functionality.Search;
 
 namespace Surreily.WadArchaeologist.ConsoleClient {
     public class Program {
         public static void Main(string[] args) {
-            // TODO: Get user arguments.
+            // Get search context from arguments.
+            SearchContext searchContext = GetSearchContext(args);
 
-            string wadArchiveFilePath = @"E:\Doom\IWADs\DOOM2.WAD";
-            WadContext wad = new WadContext();
+            // TODO: Don't use hardcoded WAD file!
+            string wadFilePath = @"E:\Doom\IWADs\DOOM2.WAD";
 
-            byte[] data;
+            Wad wad = WadFactory.Create(searchContext, wadFilePath);
 
-            using (Stream stream = new FileStream(wadArchiveFilePath, FileMode.Open)) {
-                using (BinaryReader reader = new BinaryReader(stream)) {
-                    data = reader.ReadBytes((int)stream.Length);
-                }
-            }
+            // TODO: This should not be done from the main method.
+            SideSearcher searcher = new SideSearcher();
+            searcher.Search(searchContext, wad);
+        }
 
-            SearchContext search = new SearchContext {
+        private static SearchContext GetSearchContext(string[] args) {
+            // TODO: Actually use arguments here.
+            return new SearchContext {
+                ShouldIgnoreDirectory = true,
                 MinimumNumberOfSidesPerMap = 10,
             };
-
-            SideSearcher searcher = new SideSearcher();
-            searcher.Search(search, wad, data);
-
-            Console.WriteLine("Test");
         }
     }
 }

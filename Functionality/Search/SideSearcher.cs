@@ -7,11 +7,11 @@ using Surreily.WadArchaeologist.Model;
 
 namespace Surreily.WadArchaeologist.Functionality.Search {
     public class SideSearcher {
-        public void Search(SearchContext search, WadContext wad, byte[] data) {
+        public void Search(SearchContext search, Wad wad) {
             int position = 0;
 
-            while (position < data.Length - 30) {
-                if (TryFindSides(search, wad, data, position, out int newPosition)) {
+            while (position < wad.Data.Length - 30) {
+                if (TryFindSides(search, wad, position, out int newPosition)) {
                     position = newPosition;
                 } else {
                     position++;
@@ -20,20 +20,20 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
         }
 
         private bool TryFindSides(
-            SearchContext search, WadContext wad, byte[] data, int position, out int newPosition) {
+            SearchContext search, Wad wad, int position, out int newPosition) {
 
             // Attempt to find and create sides until we hit an invalid one.
             List<Side> sides = new List<Side>();
             int currentPosition = position;
 
-            while (GetIsValidSide(data, currentPosition)) {
+            while (GetIsValidSide(wad.Data, currentPosition)) {
                 sides.Add(new Side {
-                    OffsetX = BitConverter.ToInt16(data, currentPosition),
-                    OffsetY = BitConverter.ToInt16(data, currentPosition + 2),
-                    UpperTextureName = Encoding.ASCII.GetString(data, currentPosition + 4, 8).Trim('\0'),
-                    LowerTextureName = Encoding.ASCII.GetString(data, currentPosition + 12, 8).Trim('\0'),
-                    MiddleTextureName = Encoding.ASCII.GetString(data, currentPosition + 20, 8).Trim('\0'),
-                    SectorId = BitConverter.ToUInt16(data, currentPosition + 28),
+                    OffsetX = BitConverter.ToInt16(wad.Data, currentPosition),
+                    OffsetY = BitConverter.ToInt16(wad.Data, currentPosition + 2),
+                    UpperTextureName = Encoding.ASCII.GetString(wad.Data, currentPosition + 4, 8).Trim('\0'),
+                    LowerTextureName = Encoding.ASCII.GetString(wad.Data, currentPosition + 12, 8).Trim('\0'),
+                    MiddleTextureName = Encoding.ASCII.GetString(wad.Data, currentPosition + 20, 8).Trim('\0'),
+                    SectorId = BitConverter.ToUInt16(wad.Data, currentPosition + 28),
                 });
 
                 currentPosition += 30;
