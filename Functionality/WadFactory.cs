@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using Surreily.WadArchaeologist.Functionality.Context;
 using Surreily.WadArchaeologist.Functionality.Helpers;
 using Surreily.WadArchaeologist.Functionality.Model;
 
 namespace Surreily.WadArchaeologist.Functionality {
     public static class WadFactory {
-        public static Wad Create(string filePath) {
+        public static Wad Create(string filePath, SearchOptions options) {
             byte[] data;
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open)) {
@@ -14,10 +15,10 @@ namespace Surreily.WadArchaeologist.Functionality {
                 }
             }
 
-            return Create(data);
+            return Create(data, options);
         }
 
-        public static Wad Create(Stream stream) {
+        public static Wad Create(Stream stream, SearchOptions options) {
             if (stream == null) {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -28,13 +29,16 @@ namespace Surreily.WadArchaeologist.Functionality {
                 data = binaryReader.ReadBytes((int)stream.Length);
             }
 
-            return Create(data);
+            return Create(data, options);
         }
 
-        public static Wad Create(byte[] data) {
+        public static Wad Create(byte[] data, SearchOptions options) {
             Wad wad = new Wad(new InMemoryWadData(data));
 
-            WadHelper.LoadDirectory(wad);
+            if (!options.ShouldIgnoreDirectory) {
+                WadHelper.LoadDirectory(wad);
+            }
+            
             WadHelper.InitializeUnallocatedRegions(wad);
 
             return wad;

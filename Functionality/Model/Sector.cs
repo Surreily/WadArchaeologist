@@ -1,4 +1,4 @@
-﻿namespace Surreily.WadArchaeologist.Model {
+﻿namespace Surreily.WadArchaeologist.Functionality.Model {
     public class Sector {
         public short FloorHeight { get; set; }
         public short CeilingHeight { get; set; }

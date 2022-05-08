@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Surreily.WadArchaeologist.Functionality.Context;
+using Surreily.WadArchaeologist.Functionality.Helpers;
 using Surreily.WadArchaeologist.Functionality.Model;
 using Surreily.WadArchaeologist.Model;
 
@@ -60,58 +61,9 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
 
         private bool GetIsValidSide(Wad wad, int position) {
             return
-                GetIsValidTextureName(wad, position + 4) &&
-                GetIsValidTextureName(wad, position + 12) &&
-                GetIsValidTextureName(wad, position + 20);
-        }
-
-        private bool GetIsValidTextureName(Wad wad, int position) {
-            int i = 1;
-
-            // Check if this is the null texture name: "-".
-            if (wad.Data.ReadByte(position) == '-') {
-                while (i < 8) {
-                    if (wad.Data.ReadByte(position + i) != '\0') {
-                        return false;
-                    }
-
-                    i++;
-                }
-
-                return true;
-            }
-
-            // Validate the first character.
-            if (!GetIsValidTextureNameByte(wad.Data.ReadByte(position))) {
-                return false;
-            }
-
-            // Validate the remaining characters.
-            while (i < 8) {
-                if (!GetIsValidTextureNameByte(wad.Data.ReadByte(position + i))) {
-                    break;
-                }
-
-                i++;
-            }
-
-            while (i < 8) {
-                if (wad.Data.ReadByte(position + i) != '\0') {
-                    return false;
-                }
-
-                i++;
-            }
-
-            return true;
-        }
-
-        private bool GetIsValidTextureNameByte(byte b) {
-            return
-                (b >= 'A' && b <= 'Z') ||
-                (b >= 'a' && b <= 'z') ||
-                (b >= '0' && b <= '9') ||
-                b == '_';
+                ValidationHelper.GetIsValidTextureName(wad, position + 4) &&
+                ValidationHelper.GetIsValidTextureName(wad, position + 12) &&
+                ValidationHelper.GetIsValidTextureName(wad, position + 20);
         }
     }
 }

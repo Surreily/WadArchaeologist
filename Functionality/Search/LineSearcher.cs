@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Linq;
+using Surreily.WadArchaeologist.Functionality.Context;
+using Surreily.WadArchaeologist.Functionality.Model;
 
 namespace Surreily.WadArchaeologist.Functionality.Search {
     public class LineSearcher {
-        public void Search(Stream stream) {
-            using (BinaryReader reader = new BinaryReader(stream)) {
-                
-            }
-        }
     }
 }

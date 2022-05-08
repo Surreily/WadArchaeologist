@@ -7,16 +7,16 @@ namespace Surreily.WadArchaeologist.ConsoleClient {
     public class Program {
         public static void Main(string[] args) {
             // Get search context from arguments.
-            SearchOptions searchContext = GetSearchContext(args);
+            SearchOptions options = GetSearchContext(args);
 
             // TODO: Don't use hardcoded WAD file!
             string wadFilePath = @"E:\Doom\IWADs\DOOM2.WAD";
 
-            Wad wad = WadFactory.Create(wadFilePath);
+            Wad wad = WadFactory.Create(wadFilePath, options);
 
             // TODO: This should not be done from the main method.
-            SideSearcher searcher = new SideSearcher();
-            searcher.Search(searchContext, wad);
+            new SideSearcher().Search(options, wad);
+            new SectorSearcher().Search(options, wad);
         }
 
         private static SearchOptions GetSearchContext(string[] args) {
@@ -24,6 +24,7 @@ namespace Surreily.WadArchaeologist.ConsoleClient {
             return new SearchOptions {
                 ShouldIgnoreDirectory = true,
                 MinimumNumberOfSidesPerMap = 10,
+                MinimumNumberOfSectorsPerMap = 10,
             };
         }
     }

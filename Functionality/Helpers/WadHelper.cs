@@ -25,11 +25,12 @@ namespace Surreily.WadArchaeologist.Functionality.Helpers {
         }
 
         public static void InitializeUnallocatedRegions(Wad wad) {
-            if (wad.DirectoryEntries == null) {
-                throw new InvalidOperationException("wad.DirectoryEntries cannot be null.");
-            }
-
             wad.UnallocatedRegions = new List<DataRegion>();
+
+            if (wad.DirectoryEntries == null) {
+                wad.UnallocatedRegions.Add(new DataRegion(0, wad.Data.Length));
+                return;
+            }
 
             int position = 0;
 

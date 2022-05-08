@@ -14,5 +14,7 @@ namespace Surreily.WadArchaeologist.Functionality.Model {
         public List<DataRegion> UnallocatedRegions { get; set; }
 
         public List<List<Side>> SideLists { get; set; }
+
+        public List<List<Sector>> SectorLists { get; set; }
     }
 }
