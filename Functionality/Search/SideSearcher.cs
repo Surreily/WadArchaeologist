@@ -7,6 +7,8 @@ using Surreily.WadArchaeologist.Model;
 namespace Surreily.WadArchaeologist.Functionality.Search {
     public class SideSearcher {
         public void Search(SearchOptions search, Wad wad) {
+            wad.SideLists = new List<List<Side>>();
+
             int position = 0;
 
             while (position < wad.Data.Length - 30) {

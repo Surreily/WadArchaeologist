@@ -6,6 +6,8 @@ using Surreily.WadArchaeologist.Functionality.Model;
 namespace Surreily.WadArchaeologist.Functionality.Helpers {
     public static class WadHelper {
         public static void LoadDirectory(Wad wad) {
+            wad.DirectoryEntries = new List<WadDirectoryEntry>();
+
             int directoryLength = wad.Data.ReadInt(4);
             int directoryPosition = wad.Data.ReadInt(8);
 
@@ -26,6 +28,8 @@ namespace Surreily.WadArchaeologist.Functionality.Helpers {
             if (wad.DirectoryEntries == null) {
                 throw new InvalidOperationException("wad.DirectoryEntries cannot be null.");
             }
+
+            wad.UnallocatedRegions = new List<DataRegion>();
 
             int position = 0;
 
