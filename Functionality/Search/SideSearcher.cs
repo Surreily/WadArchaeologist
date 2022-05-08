@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Surreily.WadArchaeologist.Functionality.Context;
+using Surreily.WadArchaeologist.Functionality.Model;
 using Surreily.WadArchaeologist.Model;
 
 namespace Surreily.WadArchaeologist.Functionality.Search {
     public class SideSearcher {
-        public void Search(SearchContext search, Wad wad) {
+        public void Search(SearchOptions search, Wad wad) {
             int position = 0;
 
             while (position < wad.Data.Length - 30) {
@@ -20,27 +19,27 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
         }
 
         private bool TryFindSides(
-            SearchContext search, Wad wad, int position, out int newPosition) {
+            SearchOptions options, Wad wad, int position, out int newPosition) {
 
             // Attempt to find and create sides until we hit an invalid one.
             List<Side> sides = new List<Side>();
             int currentPosition = position;
 
-            while (GetIsValidSide(wad.Data, currentPosition)) {
+            while (GetIsValidSide(wad, currentPosition)) {
                 sides.Add(new Side {
-                    OffsetX = BitConverter.ToInt16(wad.Data, currentPosition),
-                    OffsetY = BitConverter.ToInt16(wad.Data, currentPosition + 2),
-                    UpperTextureName = Encoding.ASCII.GetString(wad.Data, currentPosition + 4, 8).Trim('\0'),
-                    LowerTextureName = Encoding.ASCII.GetString(wad.Data, currentPosition + 12, 8).Trim('\0'),
-                    MiddleTextureName = Encoding.ASCII.GetString(wad.Data, currentPosition + 20, 8).Trim('\0'),
-                    SectorId = BitConverter.ToUInt16(wad.Data, currentPosition + 28),
+                    OffsetX = wad.Data.ReadShort(currentPosition),
+                    OffsetY = wad.Data.ReadShort(currentPosition + 2),
+                    UpperTextureName = wad.Data.ReadString(currentPosition + 4, 8),
+                    LowerTextureName = wad.Data.ReadString(currentPosition + 12, 8),
+                    MiddleTextureName = wad.Data.ReadString(currentPosition + 20, 8),
+                    SectorId = wad.Data.ReadUnsignedShort(currentPosition + 28),
                 });
 
                 currentPosition += 30;
             }
 
             // We must have at least N number of sides.
-            if (sides.Count < search.MinimumNumberOfSidesPerMap) {
+            if (sides.Count < options.MinimumNumberOfSidesPerMap) {
                 newPosition = 0;
                 return false;
             }
@@ -57,20 +56,20 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             return true;
         }
 
-        private bool GetIsValidSide(byte[] data, int position) {
+        private bool GetIsValidSide(Wad wad, int position) {
             return
-                GetIsValidTextureName(data, position + 4) &&
-                GetIsValidTextureName(data, position + 12) &&
-                GetIsValidTextureName(data, position + 20);
+                GetIsValidTextureName(wad, position + 4) &&
+                GetIsValidTextureName(wad, position + 12) &&
+                GetIsValidTextureName(wad, position + 20);
         }
 
-        private bool GetIsValidTextureName(byte[] data, int position) {
+        private bool GetIsValidTextureName(Wad wad, int position) {
             int i = 1;
 
             // Check if this is the null texture name: "-".
-            if (data[position] == '-') {
+            if (wad.Data.ReadByte(position) == '-') {
                 while (i < 8) {
-                    if (data[position + i] != '\0') {
+                    if (wad.Data.ReadByte(position + i) != '\0') {
                         return false;
                     }
 
@@ -81,13 +80,13 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
 
             // Validate the first character.
-            if (!GetIsValidTextureNameByte(data[position])) {
+            if (!GetIsValidTextureNameByte(wad.Data.ReadByte(position))) {
                 return false;
             }
 
             // Validate the remaining characters.
             while (i < 8) {
-                if (!GetIsValidTextureNameByte(data[position + i])) {
+                if (!GetIsValidTextureNameByte(wad.Data.ReadByte(position + i))) {
                     break;
                 }
 
@@ -95,7 +94,7 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
 
             while (i < 8) {
-                if (data[position + i] != '\0') {
+                if (wad.Data.ReadByte(position + i) != '\0') {
                     return false;
                 }
 

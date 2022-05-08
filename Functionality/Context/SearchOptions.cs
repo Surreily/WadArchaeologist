@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Surreily.WadArchaeologist.Functionality.Context {
-    public class SearchContext {
+    public class SearchOptions {
         /// <summary>
         /// Get or set a value indicating whether the search should ignore the WAD directory.
         /// </summary>

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.IO;
-using Surreily.WadArchaeologist.Functionality.Context;
-using Surreily.WadArchaeologist.Functionality.DataRegions;
+using Surreily.WadArchaeologist.Functionality.Helpers;
+using Surreily.WadArchaeologist.Functionality.Model;
 
 namespace Surreily.WadArchaeologist.Functionality {
     public static class WadFactory {
-        public static Wad Create(SearchContext searchContext, string filePath) {
-            if (searchContext == null) {
-                throw new ArgumentNullException(nameof(searchContext));
-            }
-
+        public static Wad Create(string filePath) {
             byte[] data;
 
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open)) {
@@ -18,14 +14,10 @@ namespace Surreily.WadArchaeologist.Functionality {
                 }
             }
 
-            return Create(searchContext, data);
+            return Create(data);
         }
 
-        public static Wad Create(SearchContext searchContext, Stream stream) {
-            if (searchContext == null) {
-                throw new ArgumentNullException(nameof(searchContext));
-            }
-
+        public static Wad Create(Stream stream) {
             if (stream == null) {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -36,17 +28,14 @@ namespace Surreily.WadArchaeologist.Functionality {
                 data = binaryReader.ReadBytes((int)stream.Length);
             }
 
-            return Create(searchContext, data);
+            return Create(data);
         }
 
-        public static Wad Create(SearchContext searchContext, byte[] data) {
-            Wad wad = new Wad {
-                Data = data,
-            };
+        public static Wad Create(byte[] data) {
+            Wad wad = new Wad(new InMemoryWadData(data));
 
-            // TODO: Not happy with this, would rather just have a static helper class instead of this.
-            // TODO: Allow specification of data region initializer to use.
-            wad.SetUpDataRegions(new EntireFileDataRegionInitializer());
+            WadHelper.LoadDirectory(wad);
+            WadHelper.InitializeUnallocatedRegions(wad);
 
             return wad;
         }
