@@ -3,6 +3,46 @@
 namespace Surreily.WadArchaeologist.Functionality.Helpers {
     public static class ValidationHelper {
 
+        #region Line
+
+        public static bool GetIsValidLine(Wad wad, int position, int maximumSideCount) {
+            ushort startVertex = wad.Data.ReadUnsignedShort(position);
+            ushort endVertex = wad.Data.ReadUnsignedShort(position + 2);
+
+            if (startVertex == endVertex) {
+                return false;
+            }
+
+            if (!GetIsValidLineEffect(wad, position + 6)) {
+                return false;
+            }
+
+            ushort rightSideId = wad.Data.ReadUnsignedShort(position + 10);
+
+            if (rightSideId > maximumSideCount && rightSideId != 0xFFFF) {
+                return false;
+            }
+
+            ushort leftSideId = wad.Data.ReadUnsignedShort(position + 12);
+
+            if (leftSideId > maximumSideCount && leftSideId != 0xFFFF) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool GetIsValidLineEffect(Wad wad, int position) {
+            int lineEffect = wad.Data.ReadShort(position);
+
+            return
+                (lineEffect >= 0 && lineEffect <= 77) ||
+                (lineEffect >= 79 && lineEffect <= 84) ||
+                (lineEffect >= 86 && lineEffect <= 141);
+        }
+
+        #endregion
+
         #region Sector
 
         public static bool GetIsValidSector(Wad wad, int position) {

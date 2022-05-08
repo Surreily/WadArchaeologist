@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Surreily.WadArchaeologist.Model {
+﻿namespace Surreily.WadArchaeologist.Model {
     public class Line {
-        ushort StartVertexId { get; set; }
-        ushort EndVertexId { get; set; }
-        ushort Flags { get; set; }
-        ushort Special { get; set; }
-        ushort Tag { get; set; }
-        ushort RightSideId { get; set; }
-        ushort LeftSideId { get; set; }
+        public ushort StartVertexId { get; set; }
+        public ushort EndVertexId { get; set; }
+        public ushort Flags { get; set; }
+        public ushort Effect { get; set; }
+        public ushort Tag { get; set; }
+        public ushort RightSideId { get; set; }
+        public ushort LeftSideId { get; set; }
     }
 }

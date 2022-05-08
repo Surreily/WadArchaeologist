@@ -17,13 +17,15 @@ namespace Surreily.WadArchaeologist.ConsoleClient {
             // TODO: This should not be done from the main method.
             new SideSearcher().Search(options, wad);
             new SectorSearcher().Search(options, wad);
+            new LineSearcher().Search(options, wad);
         }
 
         private static SearchOptions GetSearchContext(string[] args) {
             // TODO: Actually use arguments here.
             return new SearchOptions {
                 ShouldIgnoreDirectory = true,
-                MinimumNumberOfSidesPerMap = 10,
+                MinimumNumberOfLinesPerMap = 30,
+                MinimumNumberOfSidesPerMap = 20,
                 MinimumNumberOfSectorsPerMap = 10,
             };
         }
