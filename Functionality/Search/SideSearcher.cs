@@ -28,7 +28,7 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             List<Side> sides = new List<Side>();
             int currentPosition = position;
 
-            while (GetIsValidSide(wad, currentPosition)) {
+            while (ValidationHelper.GetIsValidSide(wad, currentPosition)) {
                 sides.Add(new Side {
                     OffsetX = wad.Data.ReadShort(currentPosition),
                     OffsetY = wad.Data.ReadShort(currentPosition + 2),
@@ -57,13 +57,6 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             wad.SideLists.Add(sides);
             newPosition = currentPosition;
             return true;
-        }
-
-        private bool GetIsValidSide(Wad wad, int position) {
-            return
-                ValidationHelper.GetIsValidTextureName(wad, position + 4) &&
-                ValidationHelper.GetIsValidTextureName(wad, position + 12) &&
-                ValidationHelper.GetIsValidTextureName(wad, position + 20);
         }
     }
 }

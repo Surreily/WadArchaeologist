@@ -26,7 +26,7 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             List<Sector> sectors = new List<Sector>();
             int currentPosition = position;
 
-            while (GetIsValidSector(wad, currentPosition)) {
+            while (ValidationHelper.GetIsValidSector(wad, currentPosition)) {
                 sectors.Add(new Sector {
                     FloorHeight = wad.Data.ReadShort(currentPosition),
                     CeilingHeight = wad.Data.ReadShort(currentPosition + 2),
@@ -52,17 +52,6 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             return true;
         }
 
-        private bool GetIsValidSector(Wad wad, int position) {
-            // TODO: Also validate sector effect?
-            return
-                ValidationHelper.GetIsValidTextureName(wad, position + 4) &&
-                ValidationHelper.GetIsValidTextureName(wad, position + 12) &&
-                GetIsValidSectorBrightness(wad, position + 20);
-        }
-
-        private bool GetIsValidSectorBrightness(Wad wad, int position) {
-            short brightness = wad.Data.ReadShort(position);
-            return brightness >= 0 && brightness <= 256;
-        }
+        
     }
 }
