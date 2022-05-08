@@ -56,13 +56,13 @@ namespace Surreily.WadArchaeologist.Functionality.Helpers {
                 if (region.Position < position) {
                     wad.UnallocatedRegions.Add(new DataRegion(
                         region.Position,
-                        position));
+                        position - region.Position));
                 }
 
                 if (region.Position + region.Length > position + length) {
                     wad.UnallocatedRegions.Add(new DataRegion(
                         position + length,
-                        region.Position + region.Length));
+                        (region.Position + region.Length) - (position + length)));
                 }
             }
 
