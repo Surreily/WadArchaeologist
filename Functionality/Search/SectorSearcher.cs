@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Surreily.WadArchaeologist.Functionality.Context;
 using Surreily.WadArchaeologist.Functionality.Helpers;
 using Surreily.WadArchaeologist.Functionality.Model;
@@ -8,11 +9,12 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
         public void Search(SearchOptions options, Wad wad) {
             wad.SectorLists = new List<List<Sector>>();
 
-            foreach (DataRegion region in wad.UnallocatedRegions) {
+            foreach (DataRegion region in wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
 
-                while (position < region.Length - 26) {
+                while (position < (region.Position + region.Length) - 26) {
                     if (TryFindSectors(options, wad, position, out int newPosition)) {
+                        WadHelper.MarkRegionAsAllocated(wad, position, newPosition - position);
                         position = newPosition;
                     } else {
                         position++;

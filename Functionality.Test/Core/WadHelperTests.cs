@@ -36,5 +36,18 @@ namespace Surreily.WadArchaeologist.Functionality.Test.Core {
             Assert.AreEqual(wad.UnallocatedRegions[1].Position, 60);
             Assert.AreEqual(wad.UnallocatedRegions[1].Length, 20);
         }
+
+        [TestMethod]
+        public void TestAdjacentRegionsBehaveCorrectlyWhenClaimed() {
+            wad.UnallocatedRegions.Add(new DataRegion(0, 100));
+
+            WadHelper.MarkRegionAsAllocated(wad, 0, 10);
+            WadHelper.MarkRegionAsAllocated(wad, 10, 10);
+            WadHelper.MarkRegionAsAllocated(wad, 20, 10);
+
+            Assert.AreEqual(wad.UnallocatedRegions.Count, 1);
+            Assert.AreEqual(wad.UnallocatedRegions[0].Position, 30);
+            Assert.AreEqual(wad.UnallocatedRegions[0].Length, 70);
+        }
     }
 }

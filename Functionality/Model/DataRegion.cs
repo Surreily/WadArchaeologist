@@ -14,7 +14,8 @@
         }
 
         public bool Intersects(int position, int length) {
-            return (Position + Length) >= position && (Position + Length) >= (position + length);
+            return Position + Length >= position && position + length >= Position;
+            ////return (Position + Length) >= position && (Position + Length) >= (position + length);
         }
     }
 }

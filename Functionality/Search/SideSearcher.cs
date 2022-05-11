@@ -10,13 +10,16 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
         public void Search(SearchOptions search, Wad wad) {
             wad.SideLists = new List<List<Side>>();
 
-            int position = 0;
+            foreach (DataRegion region in wad.UnallocatedRegions.ToList()) {
+                int position = region.Position;
 
-            while (position < wad.Data.Length - 30) {
-                if (TryFindSides(search, wad, position, out int newPosition)) {
-                    position = newPosition;
-                } else {
-                    position++;
+                while (position < (region.Position + region.Length) - 30) {
+                    if (TryFindSides(search, wad, position, out int newPosition)) {
+                        WadHelper.MarkRegionAsAllocated(wad, position, newPosition - position);
+                        position = newPosition;
+                    } else {
+                        position++;
+                    }
                 }
             }
         }

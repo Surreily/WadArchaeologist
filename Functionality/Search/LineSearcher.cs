@@ -17,11 +17,12 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
 
             wad.LineLists = new List<List<Line>>();
 
-            foreach (DataRegion region in wad.UnallocatedRegions) {
+            foreach (DataRegion region in wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
 
-                while (position <= region.Length - 14) {
+                while (position < (region.Position + region.Length) - 14) {
                     if (TryFindLine(options, wad, position, maximumSideCount, out int newPosition)) {
+                        WadHelper.MarkRegionAsAllocated(wad, position, newPosition - position);
                         position = newPosition;
                     } else {
                         position++;
