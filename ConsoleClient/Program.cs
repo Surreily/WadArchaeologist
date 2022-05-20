@@ -15,19 +15,19 @@ namespace Surreily.WadArchaeologist.ConsoleClient {
             Wad wad = WadFactory.Create(wadFilePath, options);
 
             // TODO: This should not be done from the main method.
-            new SideSearcher().Search(options, wad);
-            new SectorSearcher().Search(options, wad);
-            new LineSearcher().Search(options, wad);
+            new SideSearcher(wad, options).Search();
+            new SectorSearcher(wad, options).Search();
+            new LineSearcher(wad, options).Search();
             ////new VertexSearcher().Search(options, wad);
-            new ThingSearcher().Search(options, wad);
+            new ThingSearcher(wad, options).Search();
         }
 
         private static SearchOptions GetSearchContext(string[] args) {
             // TODO: Actually use arguments here.
             return new SearchOptions {
                 ShouldIgnoreDirectory = true,
-                MinimumNumberOfLinesPerMap = 30,
-                MinimumNumberOfSidesPerMap = 20,
+                MinimumLineCount = 30,
+                MinimumSideCount = 20,
                 MinimumNumberOfSectorsPerMap = 10,
             };
         }

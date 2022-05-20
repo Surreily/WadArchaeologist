@@ -6,23 +6,27 @@ using Surreily.WadArchaeologist.Functionality.Model;
 using Surreily.WadArchaeologist.Model;
 
 namespace Surreily.WadArchaeologist.Functionality.Search {
-    public class LineSearcher {
-        public void Search(SearchOptions options, Wad wad) {
-            List<int> sideCounts = wad.SideLists
+    public class LineSearcher : SearcherBase {
+        public LineSearcher(Wad wad, SearchOptions options)
+            : base(wad, options) {
+        }
+
+        public override void Search() {
+            List<int> sideCounts = Wad.SideLists
                 .Select(l => l.Count)
                 .ToList();
 
             int minimumSideCount = sideCounts.Min();
             int maximumSideCount = sideCounts.Max();
 
-            wad.LineLists = new List<List<Line>>();
+            Wad.LineLists = new List<List<Line>>();
 
-            foreach (DataRegion region in wad.UnallocatedRegions.ToList()) {
+            foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
 
                 while (position < (region.Position + region.Length) - 14) {
-                    if (TryFindLine(options, wad, position, maximumSideCount, out int newPosition)) {
-                        WadHelper.MarkRegionAsAllocated(wad, position, newPosition - position);
+                    if (TryFindLine(position, maximumSideCount, out int newPosition)) {
+                        WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
                         position++;
@@ -31,26 +35,25 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindLine(SearchOptions options, Wad wad, int position, int maximumSideCount, out int newPosition) {
+        private bool TryFindLine(int position, int maximumSideCount, out int newPosition) {
             List<Line> lines = new List<Line>();
             int currentPosition = position;
 
-            while (currentPosition <= wad.Data.Length - 14 && ValidationHelper.GetIsValidLine(wad, currentPosition, maximumSideCount)) {
+            while (currentPosition <= Wad.Data.Length - 14 && ValidationHelper.GetIsValidLine(Wad, currentPosition, maximumSideCount)) {
                 lines.Add(new Line {
-                    StartVertexId = wad.Data.ReadUnsignedShort(currentPosition),
-                    EndVertexId = wad.Data.ReadUnsignedShort(currentPosition + 2),
-                    Flags = wad.Data.ReadUnsignedShort(currentPosition + 4),
-                    Effect = wad.Data.ReadUnsignedShort(currentPosition + 6),
-                    Tag = wad.Data.ReadUnsignedShort(currentPosition + 8),
-                    RightSideId = wad.Data.ReadUnsignedShort(currentPosition + 10),
-                    LeftSideId = wad.Data.ReadUnsignedShort(currentPosition + 12),
+                    StartVertexId = Wad.Data.ReadUnsignedShort(currentPosition),
+                    EndVertexId = Wad.Data.ReadUnsignedShort(currentPosition + 2),
+                    Flags = Wad.Data.ReadUnsignedShort(currentPosition + 4),
+                    Effect = Wad.Data.ReadUnsignedShort(currentPosition + 6),
+                    Tag = Wad.Data.ReadUnsignedShort(currentPosition + 8),
+                    RightSideId = Wad.Data.ReadUnsignedShort(currentPosition + 10),
+                    LeftSideId = Wad.Data.ReadUnsignedShort(currentPosition + 12),
                 });
 
                 currentPosition += 14;
             }
 
-            // We must have at least N number of lines.
-            if (lines.Count < 30) {
+            if (lines.Count < Options.MinimumLineCount) {
                 newPosition = 0;
                 return false;
             }
@@ -61,7 +64,7 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
 
             // Validation passed.
-            wad.LineLists.Add(lines);
+            Wad.LineLists.Add(lines);
             newPosition = currentPosition;
             return true;
         }

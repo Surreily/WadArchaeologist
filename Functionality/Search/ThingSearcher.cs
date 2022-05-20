@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Surreily.WadArchaeologist.Functionality.Context;
 using Surreily.WadArchaeologist.Functionality.Helpers;
 using Surreily.WadArchaeologist.Functionality.Model;
 
 namespace Surreily.WadArchaeologist.Functionality.Search {
-    public class ThingSearcher {
-        public void Search(SearchOptions options, Wad wad) {
-            wad.ThingLists = new List<List<Thing>>();
+    public class ThingSearcher : SearcherBase {
+        public ThingSearcher(Wad wad, SearchOptions options)
+            : base(wad, options) {
+        }
 
-            foreach (DataRegion region in wad.UnallocatedRegions.ToList()) {
+        public override void Search() {
+            Wad.ThingLists = new List<List<Thing>>();
+
+            foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
 
                 while (position < (region.Position + region.Length) - 10) {
-                    if (TryFindThings(options, wad, region, position, out int newPosition)) {
-                        WadHelper.MarkRegionAsAllocated(wad, position, newPosition - position);
+                    if (TryFindThings(region, position, out int newPosition)) {
+                        WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
                         position++;
@@ -24,17 +27,17 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindThings(SearchOptions options, Wad wad, DataRegion region, int position, out int newPosition) {
+        private bool TryFindThings(DataRegion region, int position, out int newPosition) {
             List<Thing> things = new List<Thing>();
             int currentPosition = position;
 
             while (position < (region.Position + region.Length) - 10) {
                 Thing thing = new Thing {
-                    X = wad.Data.ReadShort(currentPosition),
-                    Y = wad.Data.ReadShort(currentPosition + 2),
-                    Angle = wad.Data.ReadUnsignedShort(currentPosition + 4),
-                    Type = wad.Data.ReadUnsignedShort(currentPosition + 6),
-                    Flags = wad.Data.ReadUnsignedShort(currentPosition + 8),
+                    X = Wad.Data.ReadShort(currentPosition),
+                    Y = Wad.Data.ReadShort(currentPosition + 2),
+                    Angle = Wad.Data.ReadUnsignedShort(currentPosition + 4),
+                    Type = Wad.Data.ReadUnsignedShort(currentPosition + 6),
+                    Flags = Wad.Data.ReadUnsignedShort(currentPosition + 8),
                 };
 
                 if (!ThingHelper.GetIsValidThing(thing)) {
@@ -60,41 +63,15 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             // Things must be somewhat near each other.
             float averageDistance = MathHelper.GetAverageDistanceBetweenClosestPoints(things, 4);
 
-            Console.WriteLine(averageDistance);
-
             if (averageDistance < 32 || averageDistance > 512) {
                 newPosition = 0;
                 return false;
             }
 
             // Validation passed.
-            wad.ThingLists.Add(things);
+            Wad.ThingLists.Add(things);
             newPosition = currentPosition;
             return true;
         }
-
-        ////private float GetAverageDistanceBetweenThings(List<Thing> things) {
-        ////    float total = 0f;
-        ////    float comparisonsCount = (things.Count * things.Count / 2) - (things.Count / 2);
-
-        ////    for (int i = 0; i < things.Count; i++) {
-        ////        for (int j = 1; j < i; j++) {
-        ////            Thing a = things[i];
-        ////            Thing b = things[j];
-
-        ////            total += MathHelper.GetDistance((float)a.X, (float)a.Y, (float)b.X, (float)b.Y);
-        ////        }
-        ////    }
-
-        ////    return total / comparisonsCount;
-        ////}
-
-        ////private float GetAverageDistanceBetweenNearestNeighbours(List<Thing> things, int count) {
-        ////    float total = 0f;
-
-        ////    foreach (Thing thing in things) {
-
-        ////    }
-        ////}
     }
 }

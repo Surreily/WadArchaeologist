@@ -5,16 +5,20 @@ using Surreily.WadArchaeologist.Functionality.Helpers;
 using Surreily.WadArchaeologist.Functionality.Model;
 
 namespace Surreily.WadArchaeologist.Functionality.Search {
-    public class SectorSearcher {
-        public void Search(SearchOptions options, Wad wad) {
-            wad.SectorLists = new List<List<Sector>>();
+    public class SectorSearcher : SearcherBase {
+        public SectorSearcher(Wad wad, SearchOptions options)
+            : base(wad, options) {
+        }
 
-            foreach (DataRegion region in wad.UnallocatedRegions.ToList()) {
+        public override void Search() {
+            Wad.SectorLists = new List<List<Sector>>();
+
+            foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
 
                 while (position < (region.Position + region.Length) - 26) {
-                    if (TryFindSectors(options, wad, position, out int newPosition)) {
-                        WadHelper.MarkRegionAsAllocated(wad, position, newPosition - position);
+                    if (TryFindSectors(position, out int newPosition)) {
+                        WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
                         position++;
@@ -23,20 +27,20 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindSectors(SearchOptions options, Wad wad, int position, out int newPosition) {
+        private bool TryFindSectors(int position, out int newPosition) {
             // Attempt to find and create sectors until we hit an invalid one.
             List<Sector> sectors = new List<Sector>();
             int currentPosition = position;
 
-            while (ValidationHelper.GetIsValidSector(wad, currentPosition)) {
+            while (ValidationHelper.GetIsValidSector(Wad, currentPosition)) {
                 sectors.Add(new Sector {
-                    FloorHeight = wad.Data.ReadShort(currentPosition),
-                    CeilingHeight = wad.Data.ReadShort(currentPosition + 2),
-                    FloorTextureName = wad.Data.ReadString(currentPosition + 4, 8),
-                    CeilingTextureName = wad.Data.ReadString(currentPosition + 12, 8),
-                    Brightness = wad.Data.ReadShort(currentPosition + 20),
-                    Effect = wad.Data.ReadUnsignedShort(currentPosition + 22),
-                    Tag = wad.Data.ReadUnsignedShort(currentPosition + 24),
+                    FloorHeight = Wad.Data.ReadShort(currentPosition),
+                    CeilingHeight = Wad.Data.ReadShort(currentPosition + 2),
+                    FloorTextureName = Wad.Data.ReadString(currentPosition + 4, 8),
+                    CeilingTextureName = Wad.Data.ReadString(currentPosition + 12, 8),
+                    Brightness = Wad.Data.ReadShort(currentPosition + 20),
+                    Effect = Wad.Data.ReadUnsignedShort(currentPosition + 22),
+                    Tag = Wad.Data.ReadUnsignedShort(currentPosition + 24),
                 });
 
                 currentPosition += 26;
@@ -49,11 +53,9 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
 
             // Validation passed.
-            wad.SectorLists.Add(sectors);
+            Wad.SectorLists.Add(sectors);
             newPosition = currentPosition;
             return true;
         }
-
-        
     }
 }
