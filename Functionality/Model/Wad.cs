@@ -18,5 +18,9 @@ namespace Surreily.WadArchaeologist.Functionality.Model {
         public List<List<Side>> SideLists { get; set; }
 
         public List<List<Sector>> SectorLists { get; set; }
+
+        public List<List<Thing>> ThingLists { get; set; }
+
+        public List<List<Vertex>> VertexLists { get; set; }
     }
 }

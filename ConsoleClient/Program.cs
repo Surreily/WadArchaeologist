@@ -18,6 +18,8 @@ namespace Surreily.WadArchaeologist.ConsoleClient {
             new SideSearcher().Search(options, wad);
             new SectorSearcher().Search(options, wad);
             new LineSearcher().Search(options, wad);
+            ////new VertexSearcher().Search(options, wad);
+            new ThingSearcher().Search(options, wad);
         }
 
         private static SearchOptions GetSearchContext(string[] args) {
