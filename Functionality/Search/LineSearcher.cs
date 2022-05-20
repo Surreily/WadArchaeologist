@@ -23,9 +23,10 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
 
             foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
+                int regionEnd = region.Position + region.Length;
 
-                while (position < (region.Position + region.Length) - 14) {
-                    if (TryFindLine(position, maximumSideCount, out int newPosition)) {
+                while (position < regionEnd - 14) {
+                    if (TryFindLine(position, regionEnd, maximumSideCount, out int newPosition)) {
                         WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
@@ -35,12 +36,12 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindLine(int position, int maximumSideCount, out int newPosition) {
+        private bool TryFindLine(int position, int regionEnd, int maximumSideCount, out int newPosition) {
             List<Line> lines = new List<Line>();
             int currentPosition = position;
 
-            while (currentPosition <= Wad.Data.Length - 14 && ValidationHelper.GetIsValidLine(Wad, currentPosition, maximumSideCount)) {
-                lines.Add(new Line {
+            while (currentPosition < regionEnd - 14) {
+                Line line = new Line {
                     StartVertexId = Wad.Data.ReadUnsignedShort(currentPosition),
                     EndVertexId = Wad.Data.ReadUnsignedShort(currentPosition + 2),
                     Flags = Wad.Data.ReadUnsignedShort(currentPosition + 4),
@@ -48,8 +49,13 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
                     Tag = Wad.Data.ReadUnsignedShort(currentPosition + 8),
                     RightSideId = Wad.Data.ReadUnsignedShort(currentPosition + 10),
                     LeftSideId = Wad.Data.ReadUnsignedShort(currentPosition + 12),
-                });
+                };
 
+                if (!LineHelper.GetIsValidLine(line, maximumSideCount)) {
+                    break;
+                }
+
+                lines.Add(line);
                 currentPosition += 14;
             }
 

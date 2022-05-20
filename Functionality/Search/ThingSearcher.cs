@@ -15,9 +15,10 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
 
             foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
+                int regionEnd = region.Position + region.Length;
 
-                while (position < (region.Position + region.Length) - 10) {
-                    if (TryFindThings(region, position, out int newPosition)) {
+                while (position < regionEnd - 10) {
+                    if (TryFindThings(position, regionEnd, out int newPosition)) {
                         WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
@@ -27,11 +28,11 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindThings(DataRegion region, int position, out int newPosition) {
+        private bool TryFindThings(int position, int regionEnd, out int newPosition) {
             List<Thing> things = new List<Thing>();
             int currentPosition = position;
 
-            while (position < (region.Position + region.Length) - 10) {
+            while (currentPosition < regionEnd - 10) {
                 Thing thing = new Thing {
                     X = Wad.Data.ReadShort(currentPosition),
                     Y = Wad.Data.ReadShort(currentPosition + 2),

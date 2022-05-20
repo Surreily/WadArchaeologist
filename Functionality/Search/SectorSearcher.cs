@@ -15,9 +15,10 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
 
             foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
+                int regionEnd = region.Position + region.Length;
 
-                while (position < (region.Position + region.Length) - 26) {
-                    if (TryFindSectors(position, out int newPosition)) {
+                while (position < regionEnd - 26) {
+                    if (TryFindSectors(position, regionEnd, out int newPosition)) {
                         WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
@@ -27,13 +28,13 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindSectors(int position, out int newPosition) {
+        private bool TryFindSectors(int position, int regionEnd, out int newPosition) {
             // Attempt to find and create sectors until we hit an invalid one.
             List<Sector> sectors = new List<Sector>();
             int currentPosition = position;
 
-            while (ValidationHelper.GetIsValidSector(Wad, currentPosition)) {
-                sectors.Add(new Sector {
+            while (currentPosition < regionEnd - 26) {
+                Sector sector = new Sector {
                     FloorHeight = Wad.Data.ReadShort(currentPosition),
                     CeilingHeight = Wad.Data.ReadShort(currentPosition + 2),
                     FloorTextureName = Wad.Data.ReadString(currentPosition + 4, 8),
@@ -41,9 +42,14 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
                     Brightness = Wad.Data.ReadShort(currentPosition + 20),
                     Effect = Wad.Data.ReadUnsignedShort(currentPosition + 22),
                     Tag = Wad.Data.ReadUnsignedShort(currentPosition + 24),
-                });
+                };
+
+                if (!SectorHelper.GetIsValidSector(sector)) {
+                    break;
+                }
 
                 currentPosition += 26;
+                sectors.Add(sector);
             }
 
             // We must have at least N number of sectors.

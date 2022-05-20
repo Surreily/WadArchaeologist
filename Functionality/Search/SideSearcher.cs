@@ -16,9 +16,10 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
 
             foreach (DataRegion region in Wad.UnallocatedRegions.ToList()) {
                 int position = region.Position;
+                int regionEnd = region.Position + region.Length;
 
-                while (position < (region.Position + region.Length) - 30) {
-                    if (TryFindSides(position, out int newPosition)) {
+                while (position < regionEnd - 30) {
+                    if (TryFindSides(position, regionEnd, out int newPosition)) {
                         WadHelper.MarkRegionAsAllocated(Wad, position, newPosition - position);
                         position = newPosition;
                     } else {
@@ -28,21 +29,26 @@ namespace Surreily.WadArchaeologist.Functionality.Search {
             }
         }
 
-        private bool TryFindSides(int position, out int newPosition) {
+        private bool TryFindSides(int position, int regionEnd, out int newPosition) {
             // Attempt to find and create sides until we hit an invalid one.
             List<Side> sides = new List<Side>();
             int currentPosition = position;
 
-            while (ValidationHelper.GetIsValidSide(Wad, currentPosition)) {
-                sides.Add(new Side {
+            while (currentPosition < regionEnd - 30) {
+                Side side = new Side {
                     OffsetX = Wad.Data.ReadShort(currentPosition),
                     OffsetY = Wad.Data.ReadShort(currentPosition + 2),
                     UpperTextureName = Wad.Data.ReadString(currentPosition + 4, 8),
                     LowerTextureName = Wad.Data.ReadString(currentPosition + 12, 8),
                     MiddleTextureName = Wad.Data.ReadString(currentPosition + 20, 8),
                     SectorId = Wad.Data.ReadUnsignedShort(currentPosition + 28),
-                });
+                };
 
+                if (!SideHelper.GetIsValidSide(side)) {
+                    break;
+                }
+
+                sides.Add(side);
                 currentPosition += 30;
             }
 

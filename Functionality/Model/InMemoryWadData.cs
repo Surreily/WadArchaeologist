@@ -20,7 +20,7 @@ namespace Surreily.WadArchaeologist.Functionality.Model {
         }
 
         public string ReadString(int position, int length) {
-            return Encoding.ASCII.GetString(_data, position, length).Trim('\0');
+            return Encoding.ASCII.GetString(_data, position, length).TrimEnd('\0');
         }
 
         public int ReadInt(int position) {
