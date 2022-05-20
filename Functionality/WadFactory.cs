@@ -35,7 +35,7 @@ namespace Surreily.WadArchaeologist.Functionality {
         public static Wad Create(byte[] data, SearchOptions options) {
             Wad wad = new Wad(new InMemoryWadData(data));
 
-            if (!options.ShouldIgnoreDirectory) {
+            if (!options.IgnoreDirectory) {
                 WadHelper.LoadDirectory(wad);
             }
             

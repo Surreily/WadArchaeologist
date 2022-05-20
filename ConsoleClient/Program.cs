@@ -25,10 +25,10 @@ namespace Surreily.WadArchaeologist.ConsoleClient {
         private static SearchOptions GetSearchContext(string[] args) {
             // TODO: Actually use arguments here.
             return new SearchOptions {
-                ShouldIgnoreDirectory = true,
+                IgnoreDirectory = true,
                 MinimumLineCount = 30,
                 MinimumSideCount = 20,
-                MinimumNumberOfSectorsPerMap = 10,
+                MinimumSectorCount = 10,
             };
         }
     }
